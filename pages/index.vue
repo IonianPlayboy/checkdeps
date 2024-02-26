@@ -26,6 +26,19 @@
 							@input="handleInput('packageJsonUrl')"
 						/>
 					</UFormGroup>
+					<UFormGroup name="lockfileUrl" size="xl">
+						<template #label> Link to your lockfile </template>
+						<template #description>
+							We will parse your lockfile to get the exact
+							versions of your dependencies currently installed.
+						</template>
+						<UInput
+							v-model="state.lockfileUrl"
+							placeholder="https://link-to-your-lockfile"
+							icon="i-heroicons-link"
+							@input="handleInput('lockfileUrl')"
+						/>
+					</UFormGroup>
 					<UButton type="submit"> Submit </UButton>
 				</UForm>
 				<UCard
@@ -52,12 +65,14 @@ import { z } from "zod";
 
 const schema = z.object({
 	packageJsonUrl: z.string().url(),
+	lockfileUrl: z.string().url().optional(),
 });
 
 type Schema = z.output<typeof schema>;
 
 const state = reactive<Partial<Schema>>({
 	packageJsonUrl: undefined,
+	lockfileUrl: undefined,
 });
 
 const form = ref<Form<Schema> | undefined>();
@@ -80,8 +95,19 @@ const {
 	error: packageJsonError,
 } = useRemoteFileContent<PackageJson>({
 	name: "packageJson",
-	type: "json" as const,
+	type: "json",
 	url: () => state.packageJsonUrl,
+	enabled: hasBeenSubmitted,
+});
+
+const {
+	data: lockfileData,
+	isLoading: isLoadingLockfile,
+	isError: isErrorLockfile,
+	error: lockfileError,
+} = useRemoteFileContent<string>({
+	name: "lockfile",
+	url: () => state.lockfileUrl,
 	enabled: hasBeenSubmitted,
 });
 
@@ -91,7 +117,11 @@ whenever(
 		if (!state.packageJsonUrl) return;
 
 		const currentName = packageJsonData.value?.name ?? "unknown";
-		console.log("currentName", currentName);
+		console.log(
+			"currentName",
+			currentName,
+			lockfileData.value?.slice(0, 100) ?? "unknown",
+		);
 	},
 );
 </script>
