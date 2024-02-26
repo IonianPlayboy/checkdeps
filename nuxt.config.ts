@@ -7,6 +7,7 @@ export default defineNuxtConfig({
 		"@nuxtjs/fontaine",
 		"@nuxtjs/google-fonts",
 		"@hebilicious/vue-query-nuxt",
+		"@vueuse/nuxt",
 	],
 	ui: {
 		icons: ["heroicons", "simple-icons"],
