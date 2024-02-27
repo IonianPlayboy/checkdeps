@@ -10,6 +10,9 @@ export default defineNuxtConfig({
 		"@vueuse/nuxt",
 		"@pinia/nuxt",
 	],
+	runtimeConfig: {
+		githubPersonalAccessToken: "", // Will be replaced by NUXT_GITHUB_TOKEN
+	},
 	ui: {
 		icons: ["heroicons", "simple-icons"],
 	},

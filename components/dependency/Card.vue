@@ -9,21 +9,59 @@
 			description: 'flex flex-col justify-between flex-1 ',
 		}"
 	>
+		<template #icon>
+			<UBadge
+				v-if="!!currentLockfileVersion"
+				:color="
+					latestVersion === currentLockfileVersion
+						? 'green'
+						: 'yellow'
+				"
+				:variant="
+					latestVersion === currentLockfileVersion ? 'soft' : 'subtle'
+				"
+			>
+				{{
+					latestVersion === currentLockfileVersion
+						? "Up to date"
+						: "Outdated"
+				}}
+			</UBadge>
+		</template>
 		<template #title>
-			<template v-if="dependencyName">
-				<strong>{{ dependencyName }}</strong>
+			<strong>{{ dependencyName }}</strong>
+			<template v-if="!isLoadingMetadata">
+				<span class="text-sm text-gray-500">
+					{{
+						!!currentLockfileVersion &&
+						latestVersion !== currentLockfileVersion
+							? `${currentLockfileVersion} - `
+							: ""
+					}}
+					{{ metadata?.["dist-tags"].latest }}
+				</span>
 			</template>
 			<div v-else class="w-full flex justify-between py-1">
 				<USkeleton class="h-4.5 w-20" />
 				<USkeleton class="h-4 w-12" />
 			</div>
 		</template>
+		<template #description>
+			<p
+				v-if="!isLoadingMetadata && !!modifiedTimestamp"
+				class="text-sm mt-1 text-gray-500"
+			>
+				Last update {{ formattedModifiedDate }}
+			</p>
+
+			<USkeleton v-else class="h-3 py-0.5 mt-1 w-32" />
+		</template>
 	</UPageCard>
 </template>
 
 <script setup lang="ts">
-defineProps<{
-	dependencyName?: string;
+const props = defineProps<{
+	dependencyName: string;
 	projectId: string;
 	versionData?: Partial<{
 		lockfileVersion: string;
@@ -31,4 +69,19 @@ defineProps<{
 	}>;
 	index?: number;
 }>();
+
+const currentLockfileVersion = computed(
+	() => props.versionData?.lockfileVersion,
+);
+
+const { data: metadata, isLoading: isLoadingMetadata } = useDependencyMetadata({
+	dependencyName: () => props.dependencyName,
+});
+const latestVersion = computed(
+	() => metadata.value?.["dist-tags"].latest ?? "",
+);
+
+const modifiedTimestamp = computed(() => metadata.value?.time?.modified ?? "");
+
+const formattedModifiedDate = useDateFormat(modifiedTimestamp, "YYYY-MM-DD");
 </script>

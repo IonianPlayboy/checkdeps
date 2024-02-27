@@ -23,11 +23,13 @@
 		"@vueuse/router": "^10.8.0",
 		"import": "^0.0.6",
 		"nuxt": "^3.10.3",
+		"octokit": "^3.1.2",
 		"zod": "^3.22.4"
 	},
 	"devDependencies": {
 		"@nuxt/eslint-config": "^0.2.0",
 		"@pinia/nuxt": "^0.5.1",
+		"@types/pacote": "^11.1.8",
 		"@vueuse/nuxt": "^10.8.0",
 		"eslint": "^8.56.0",
 		"prettier": "^3.2.5",
