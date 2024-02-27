@@ -10,6 +10,12 @@
 		}"
 	>
 		<template #icon>
+			<img
+				v-if="repository?.organization?.avatar_url"
+				class="h-8 w-8 rounded-full bg-gray-800"
+				:src="repository?.organization?.avatar_url"
+			/>
+			<USkeleton v-else class="h-8 w-8 rounded-full" />
 			<UBadge
 				v-if="!!currentLockfileVersion"
 				:color="
@@ -47,6 +53,13 @@
 			</div>
 		</template>
 		<template #description>
+			<p v-if="!isLoadingRepository" class="min-h-[2lh]">
+				{{ repository?.description }}
+			</p>
+			<div v-else class="flex flex-col space-y-2 py-1">
+				<USkeleton class="h-3.5 w-[250px]" />
+				<USkeleton class="h-3.5 w-[200px]" />
+			</div>
 			<p
 				v-if="!isLoadingMetadata && !!modifiedTimestamp"
 				class="text-sm mt-1 text-gray-500"
@@ -67,7 +80,6 @@ const props = defineProps<{
 		lockfileVersion: string;
 		semver: string;
 	}>;
-	index?: number;
 }>();
 
 const currentLockfileVersion = computed(
@@ -80,6 +92,11 @@ const { data: metadata, isLoading: isLoadingMetadata } = useDependencyMetadata({
 const latestVersion = computed(
 	() => metadata.value?.["dist-tags"].latest ?? "",
 );
+
+const { data: repository, isLoading: isLoadingRepository } =
+	useDependencyGitHubRepository({
+		dependencyName: () => props.dependencyName,
+	});
 
 const modifiedTimestamp = computed(() => metadata.value?.time?.modified ?? "");
 

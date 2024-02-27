@@ -9,5 +9,6 @@ module.exports = {
 		"vue/no-v-html": 0,
 		"vue/html-indent": 0,
 		"vue/singleline-html-element-content-newline": 0,
+		"vue/html-self-closing": 0,
 	},
 };

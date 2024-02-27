@@ -30,14 +30,13 @@
 				</h2>
 				<UPageGrid>
 					<DependencyCard
-						v-for="(dependencyName, index) in devDependenciesNames"
+						v-for="dependencyName in devDependenciesNames"
 						:key="dependencyName"
 						:dependency-name="dependencyName"
 						:project-id="id"
 						:version-data="
 							parsedVersionsPerDependency?.[dependencyName]
 						"
-						:index="index"
 					/>
 				</UPageGrid>
 			</UPageBody>
