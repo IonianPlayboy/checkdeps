@@ -100,16 +100,7 @@ const {
 	enabled: hasBeenSubmitted,
 });
 
-const {
-	data: lockfileData,
-	isLoading: isLoadingLockfile,
-	isError: isErrorLockfile,
-	error: lockfileError,
-} = useRemoteFileContent<string>({
-	name: "lockfile",
-	url: () => state.lockfileUrl,
-	enabled: hasBeenSubmitted,
-});
+const { setCurrentProjectId, addProject } = useDependenciesStore();
 
 whenever(
 	() => !isLoadingPackageJson.value,
@@ -117,11 +108,14 @@ whenever(
 		if (!state.packageJsonUrl) return;
 
 		const currentName = packageJsonData.value?.name ?? "unknown";
-		console.log(
-			"currentName",
-			currentName,
-			lockfileData.value?.slice(0, 100) ?? "unknown",
-		);
+
+		addProject({
+			name: currentName,
+			packageJsonUrl: state.packageJsonUrl,
+			lockfileUrl: state.lockfileUrl,
+		});
+		setCurrentProjectId(currentName);
+		return navigateTo(`/projects/${currentName}`);
 	},
 );
 </script>

@@ -2,6 +2,7 @@ module.exports = {
 	root: true,
 	extends: ["@nuxt/eslint-config"],
 	rules: {
+		"no-mixed-spaces-and-tabs": 0,
 		// Vue
 		"vue/multi-word-component-names": 0,
 		"vue/max-attributes-per-line": "off",

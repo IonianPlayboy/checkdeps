@@ -1,22 +1,24 @@
 type GetRemoteFileParams = {
-	name: string;
 	url?: string;
 	type: "json" | "text";
 	signal?: AbortSignal;
 };
 
 const getRemoteFileContent = async <Result>({
-	name,
 	url,
 	type,
 	signal,
 }: GetRemoteFileParams) => {
 	if (!url) return Promise.reject("No url provided");
+
+	const fetchParamsPerType =
+		type === "json" ? { parseResponse: JSON.parse } : {};
+
 	// TODO: weird issue with the response type if not using the type assertion
 	const response = await $fetch<Result>("/api/remoteFileContent", {
-		query: { name, url, type },
-		parseResponse: JSON.parse,
+		query: { url, type },
 		signal,
+		...fetchParamsPerType,
 	});
 	return response;
 };
@@ -36,17 +38,18 @@ export const useRemoteFileContent = <Result>({
 }: RemoteFileQueryOptions) => {
 	const isEnabled = computed(() => !!toValue(url) && toValue(enabled));
 
+	const currentType = type ?? "text";
+
 	const remoteFileContentQueryKey = computed(
-		() => ["remoteFile", type, name, toValue(url)] as const,
+		() => ["remoteFile", currentType, name, toValue(url)] as const,
 	);
 
 	return useQuery({
 		queryKey: remoteFileContentQueryKey,
 		queryFn: ({ signal }) =>
 			getRemoteFileContent<Result>({
-				name,
 				url: toValue(url),
-				type: type ?? "text",
+				type: currentType,
 				signal,
 			}),
 		enabled: isEnabled,

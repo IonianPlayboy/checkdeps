@@ -8,6 +8,7 @@ export default defineNuxtConfig({
 		"@nuxtjs/google-fonts",
 		"@hebilicious/vue-query-nuxt",
 		"@vueuse/nuxt",
+		"@pinia/nuxt",
 	],
 	ui: {
 		icons: ["heroicons", "simple-icons"],

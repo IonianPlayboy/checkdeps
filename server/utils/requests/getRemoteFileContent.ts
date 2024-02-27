@@ -3,7 +3,6 @@ import type { PackageJson } from "type-fest";
 export type RemoteFileType = "json" | "text";
 
 export type GetRemoteFileParams<T extends RemoteFileType> = {
-	name: string;
 	url: string;
 	type: T;
 };
@@ -31,8 +30,6 @@ export type RemoteFileContent<T extends RemoteFileType> = T extends "text"
 
 export const getRemoteFileContent = defineCachedFunction(
 	async <T extends RemoteFileType>({
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		name,
 		url,
 		type,
 	}: GetRemoteFileParams<T>): Promise<RemoteFileContent<T>> => {
@@ -50,6 +47,6 @@ export const getRemoteFileContent = defineCachedFunction(
 	{
 		maxAge: 60 * 60,
 		name: "RemoteFileContent",
-		getKey: ({ name, url, type }) => `${type}_${name}_${url}`,
+		getKey: ({ url }) => url,
 	},
 );
