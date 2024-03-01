@@ -115,7 +115,7 @@ whenever(
 			lockfileUrl: state.lockfileUrl,
 		});
 		setCurrentProjectId(currentName);
-		return navigateTo(`/projects/${currentName}`);
+		return navigateTo(`/project/${currentName}`);
 	},
 );
 </script>

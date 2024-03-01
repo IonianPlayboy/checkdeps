@@ -48,6 +48,10 @@
 import { useRouteParams } from "@vueuse/router";
 import type { PackageJson } from "type-fest";
 
+definePageMeta({
+	keepAlive: true,
+});
+
 const id = useRouteParams("id", "", { transform: String });
 
 const { currentProject, setCurrentProjectId, resetCurrentProjectId } =
@@ -100,11 +104,7 @@ const parsedVersionsPerDependency = computed(() =>
 		packageJson: packageJsonData,
 		allDependenciesNames: allDependenciesNames,
 		lockfileData: lockfileData,
-		url: currentLockfileUrl,
+		lockfileUrl: currentLockfileUrl,
 	}),
 );
-
-onUnmounted(() => {
-	resetCurrentProjectId();
-});
 </script>

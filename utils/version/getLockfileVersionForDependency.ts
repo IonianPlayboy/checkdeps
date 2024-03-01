@@ -7,17 +7,17 @@ import {
 export type GetLockfileVersionForDependencyParams = {
 	dependencyName?: string;
 	lockfileData?: string;
-	url?: string;
+	lockfileUrl?: string;
 };
 
 export const getLockfileVersionForDependency = ({
-	url,
+	lockfileUrl,
 	...restOfParams
 }: GetLockfileVersionForDependencyParams) => {
-	if (url?.endsWith("yarn.lock"))
+	if (lockfileUrl?.endsWith("yarn.lock"))
 		return getVersionForDependencyInYarnLockfile(restOfParams);
-	if (url?.endsWith("pnpm-lock.yaml"))
+	if (lockfileUrl?.endsWith("pnpm-lock.yaml"))
 		return getVersionForDependencyInPnpmLockfile(restOfParams);
-	if (url?.endsWith("package-lock.json"))
+	if (lockfileUrl?.endsWith("package-lock.json"))
 		return getVersionForDependencyInNpmLockfile(restOfParams);
 };

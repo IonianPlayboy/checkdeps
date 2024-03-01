@@ -9,7 +9,31 @@ export default defineNuxtConfig({
 		"@hebilicious/vue-query-nuxt",
 		"@vueuse/nuxt",
 		"@pinia/nuxt",
+		"@nuxtjs/web-vitals",
 	],
+	content: {
+		highlight: {
+			theme: {
+				default: "github-dark",
+				light: "github-light",
+			},
+			langs: [
+				"js",
+				"ts",
+				"vue",
+				"css",
+				"html",
+				"vue",
+				"shell",
+				"graphql",
+				"scss",
+				"hbs",
+				"console",
+				"jsx",
+				"tsx",
+			],
+		},
+	},
 	runtimeConfig: {
 		githubPersonalAccessToken: "", // Will be replaced by NUXT_GITHUB_TOKEN
 	},
@@ -29,8 +53,13 @@ export default defineNuxtConfig({
 	},
 	devtools: {
 		enabled: true,
+		timeline: {
+			enabled: true,
+		},
 	},
-	typescript: {
-		strict: false,
+	webVitals: {
+		provider: "log",
+		debug: true, // debug enable metrics reporting on dev environments
+		disabled: false,
 	},
 });

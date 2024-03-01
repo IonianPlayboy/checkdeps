@@ -6,17 +6,17 @@ import {
 } from "./index";
 
 export type GetVersionsPerDependencyParams = {
-	packageJson?: MaybeRefOrGetter<PackageJson>;
+	packageJson: MaybeRefOrGetter<PackageJson | undefined>;
 	allDependenciesNames: MaybeRefOrGetter<string[]>;
-	lockfileData?: MaybeRefOrGetter<string>;
-	url?: MaybeRefOrGetter<string>;
+	lockfileData: MaybeRefOrGetter<string | undefined>;
+	lockfileUrl: MaybeRefOrGetter<string | undefined>;
 };
 
 export const getVersionsPerDependency = ({
 	packageJson,
 	allDependenciesNames,
 	lockfileData,
-	url,
+	lockfileUrl,
 }: GetVersionsPerDependencyParams) => {
 	const dependenciesNames = toValue(allDependenciesNames);
 	return Object.fromEntries(
@@ -26,7 +26,7 @@ export const getVersionsPerDependency = ({
 				lockfileVersion: getLockfileVersionForDependency({
 					dependencyName,
 					lockfileData: toValue(lockfileData),
-					url: toValue(url),
+					lockfileUrl: toValue(lockfileUrl),
 				}),
 				semver: getSemverForDependency({ packageJson, dependencyName }),
 				dependencyName,

@@ -1,13 +1,16 @@
 <template>
 	<UPageCard
 		:ui="{
+			// @ts-ignore
 			icon: {
 				wrapper: 'flex justify-between w-full',
 			},
 			title: 'w-full flex justify-between',
+			// @ts-ignore
 			body: { base: 'h-full flex flex-col' },
 			description: 'flex flex-col justify-between flex-1 ',
 		}"
+		:to="linkToPackageParams"
 	>
 		<template #icon>
 			<img
@@ -86,6 +89,11 @@ const currentLockfileVersion = computed(
 	() => props.versionData?.lockfileVersion,
 );
 
+const linkToPackageParams = computed(() => ({
+	name: "project-package-name",
+	params: { name: props.dependencyName },
+}));
+
 const { data: metadata, isLoading: isLoadingMetadata } = useDependencyMetadata({
 	dependencyName: () => props.dependencyName,
 });
@@ -94,7 +102,7 @@ const latestVersion = computed(
 );
 
 const { data: repository, isLoading: isLoadingRepository } =
-	useDependencyGitHubRepository({
+	useDependencyGithubRepository({
 		dependencyName: () => props.dependencyName,
 	});
 

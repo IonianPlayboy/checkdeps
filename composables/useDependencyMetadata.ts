@@ -8,12 +8,14 @@ const getPackageMetadata = async ({
 	signal,
 }: GetPackageMetadataParams) => {
 	if (!packageName) return Promise.reject("No package name provided");
+
 	const response = await $fetch("/api/npm/packageMetadata", {
 		query: {
 			packageName,
 		},
 		signal,
 	});
+
 	return response;
 };
 
@@ -29,11 +31,18 @@ export const useDependencyMetadata = <T = PackageMetadata>({
 	select,
 }: PackageMetadataQueryOptions<T>) => {
 	const isEnabled = computed(() => !!toValue(dependencyName));
+
+	const dependencyMetadataQueryKey = computed(
+		() => ["dependency", "metadata", toValue(dependencyName)] as const,
+	);
+
 	return useQuery({
-		queryKey: ["packageMetadata", toValue(dependencyName)],
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		queryFn: ({ queryKey: [_, currentPackage], signal }) =>
-			getPackageMetadata({ packageName: currentPackage, signal }),
+		queryKey: dependencyMetadataQueryKey,
+		queryFn: ({ signal }) =>
+			getPackageMetadata({
+				packageName: toValue(dependencyName),
+				signal,
+			}),
 		enabled: isEnabled,
 		select,
 	});

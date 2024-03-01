@@ -10,5 +10,11 @@ module.exports = {
 		"vue/html-indent": 0,
 		"vue/singleline-html-element-content-newline": 0,
 		"vue/html-self-closing": 0,
+		"vue/v-slot-style": [
+			1,
+			{
+				atComponent: "shorthand",
+			},
+		],
 	},
 };

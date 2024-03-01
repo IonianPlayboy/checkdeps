@@ -17,7 +17,9 @@ export const useDependenciesStore = defineStore("dependencies", () => {
 
 	const projects = computed(() => Array.from(projectsMap.value.values()));
 	const currentProject = computed(() =>
-		projectsMap.value.get(currentProjectId.value),
+		currentProjectId.value
+			? projectsMap.value.get(currentProjectId.value) ?? null
+			: null,
 	);
 
 	const addProject = (project: ProjectToCheck) => {
@@ -29,11 +31,6 @@ export const useDependenciesStore = defineStore("dependencies", () => {
 	const resetCurrentProjectId = () => {
 		currentProjectId.value = null;
 	};
-
-	watchEffect(() => {
-		console.log("currentProjectId", currentProjectId.value, projects.value);
-	});
-
 	return {
 		projects,
 		currentProjectId,

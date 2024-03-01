@@ -1,14 +1,14 @@
-type GetDependencyGitHubRepositoryParams = {
+type GetDependencyGithubRepositoryParams = {
 	owner?: string;
 	repo?: string;
 	signal?: AbortSignal;
 };
 
-const getDependencyGitHubRepository = async ({
+const getDependencyGithubRepository = async ({
 	owner,
 	repo,
 	signal,
-}: GetDependencyGitHubRepositoryParams = {}) => {
+}: GetDependencyGithubRepositoryParams = {}) => {
 	if (!owner || !repo)
 		return Promise.reject(
 			"No valid repository found for provided dependency",
@@ -24,13 +24,19 @@ const getDependencyGitHubRepository = async ({
 	return response;
 };
 
-type dependencyGitHubRepositoryQueryOptions = {
+export type GithubRepository = Awaited<
+	ReturnType<typeof getDependencyGithubRepository>
+>;
+
+export type DependencyGithubRepositoryQueryOptions<T> = {
 	dependencyName?: MaybeRefOrGetter<string>;
+	select?: (repository: GithubRepository) => T;
 };
 
-export const useDependencyGitHubRepository = ({
+export const useDependencyGithubRepository = <T = GithubRepository>({
 	dependencyName,
-}: dependencyGitHubRepositoryQueryOptions) => {
+	select,
+}: DependencyGithubRepositoryQueryOptions<T>) => {
 	const { data: repositoryParams, isLoading: isLoadingDependencyMetadata } =
 		useDependencyMetadata({
 			dependencyName,
@@ -44,7 +50,7 @@ export const useDependencyGitHubRepository = ({
 			Boolean(repositoryParams.value?.repo),
 	);
 
-	const dependencyGitHubRepositoryQueryKey = computed(
+	const dependencyGithubRepositoryQueryKey = computed(
 		() =>
 			[
 				"github",
@@ -55,12 +61,13 @@ export const useDependencyGitHubRepository = ({
 	);
 
 	return useQuery({
-		queryKey: dependencyGitHubRepositoryQueryKey,
+		queryKey: dependencyGithubRepositoryQueryKey,
 		queryFn: ({ signal }) =>
-			getDependencyGitHubRepository({
+			getDependencyGithubRepository({
 				...toValue(repositoryParams),
 				signal,
 			}),
 		enabled: isEnabled,
+		select,
 	});
 };
