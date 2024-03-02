@@ -15,10 +15,6 @@ export const getPackageReleasesData = defineCachedFunction(
 		githubPersonalAccessToken,
 	}: GetPackageReleasesDataParams) => {
 		try {
-			console.log(
-				"changelog URL",
-				`https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/CHANGELOG.md`,
-			);
 			const changelog = await getRemoteFileContent({
 				url: `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/CHANGELOG.md`,
 				type: "text",

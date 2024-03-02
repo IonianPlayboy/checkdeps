@@ -21,7 +21,9 @@ const props = defineProps<{
 	};
 }>();
 
-const currentIdentifier = computed(() => props.data?.name ?? props.data?.id);
+const currentIdentifier = computed(
+	() => `${props.data?.name}-${props.data?.id}`,
+);
 
 const { data: parsedData, error } = useLazyAsyncData(
 	`${currentIdentifier.value}.md`,

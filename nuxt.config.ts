@@ -10,6 +10,7 @@ export default defineNuxtConfig({
 		"@vueuse/nuxt",
 		"@pinia/nuxt",
 		"@nuxtjs/web-vitals",
+		"@formkit/auto-animate",
 	],
 	content: {
 		highlight: {

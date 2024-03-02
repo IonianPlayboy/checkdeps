@@ -6,6 +6,7 @@
 		</template>
 
 		<template #right>
+			<UColorModeToggle />
 			<UButton
 				label="Sign in"
 				color="white"
