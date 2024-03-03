@@ -1,8 +1,4 @@
 <template>
-	<!-- <UFooterLinks
-		class="w-full justify-start overflow-x-auto"
-		:links="itemsLinks"
-	/> -->
 	<section class="overflow-y-auto relative" :style="{ height: listHeight }">
 		<div
 			class="sticky w-full z-10 pointer-events-none top-0 h-8 bg-gradient-to-b dark:from-gray-900 from-gray-100 to-transparent"
@@ -39,7 +35,7 @@ const props = defineProps<{
 		label: string;
 		baseIndex: number;
 		click: () => void;
-		active: boolean;
+		// active: boolean;
 	}>;
 	pageHeaderHeight: number;
 }>();
@@ -51,32 +47,9 @@ const contentItems = computed(
 	() => props.content?.filter(matchIsDefined) ?? [],
 );
 
-// const matchIsItemWithDefinedName = <T extends { name: string | null }>(
-// 	item: T,
-// ): item is T & { name: string } => !!item.name;
-
 const virtualizerElement = ref<InstanceType<typeof Virtualizer> | null>(null);
 
 const currentActiveItemIndex = ref(-1);
-
-// const itemsLinks = computed(() =>
-// 	contentItems.value
-// 		.filter(matchIsItemWithDefinedName)
-// 		.map((item, index) => ({
-// 			id: item.id,
-// 			label: item.name,
-// 			baseIndex: index,
-// 			click: () => {
-// 				if (!virtualizerElement.value) return;
-// 				virtualizerElement.value.scrollToIndex(index, { smooth: true });
-// 			},
-// 			active: index === currentActiveItemIndex.value,
-// 		}))
-// 		.filter(
-// 			(item, index, array) =>
-// 				array.findIndex(({ label }) => label === item.label) === index,
-// 		),
-// );
 
 const getActiveItemIndex = (offset: number) => {
 	if (!virtualizerElement.value) return -1;

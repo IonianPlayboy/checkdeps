@@ -3,13 +3,12 @@
 		<UPage>
 			<UPageHeader
 				ref="headerElement"
-				:links="itemsLinks"
 				:ui="{
 					wrapper: '[&>div>div.flex-1]:w-full',
-					container: 'gap-12',
+					container: 'gap-8 items-stretch lg:items-stretch',
 
-					title: 'flex gap-6 grow shrink-0',
-					links: 'overflow-x-auto grid grid-flow-col grow',
+					title: 'flex gap-6 shrink-0',
+					links: 'overflow-x-auto grid grid-flow-col grow items-stretch',
 				}"
 			>
 				<template #title>
@@ -21,6 +20,12 @@
 					<USkeleton v-else class="h-8 w-8 rounded-full" />
 					<ULink :to="repository?.html_url">{{ packageName }}</ULink>
 				</template>
+				<template #links>
+					<ReleasesLinksList
+						:links="itemsLinks"
+						:active-index="currentActiveItemIndex"
+					/>
+				</template>
 				<template #description>
 					{{ repository?.description }}
 				</template>
@@ -31,7 +36,7 @@
 					<USkeleton />
 				</div>
 				<div v-else-if="releasesError">{{ releasesError }}</div>
-				<TextContentList
+				<ReleasesContentList
 					v-if="!!releasesData"
 					ref="textContentListElement"
 					:content="releasesData"
@@ -44,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { TextContentList } from "#components";
+import { ReleasesContentList } from "#components";
 import { useRouteParams } from "@vueuse/router";
 
 const packageName = useRouteParams("name", "", { transform: String });
@@ -70,8 +75,12 @@ const { height } = useElementSize(headerElement, undefined, {
 	box: "border-box",
 });
 
-const textContentListElement = ref<InstanceType<typeof TextContentList> | null>(
-	null,
+const textContentListElement = ref<InstanceType<
+	typeof ReleasesContentList
+> | null>(null);
+
+const currentActiveItemIndex = computed(
+	() => textContentListElement.value?.currentActiveItemIndex ?? -1,
 );
 
 const matchIsItemWithDefinedName = <T extends { name: string | null }>(
@@ -89,8 +98,8 @@ const itemsLinks = computed(() =>
 				if (!textContentListElement.value) return;
 				textContentListElement.value.scrollToIndex(index);
 			},
-			active:
-				index === textContentListElement.value?.currentActiveItemIndex,
+			// active:
+			// 	index === textContentListElement.value?.currentActiveItemIndex,
 		}))
 		.filter(
 			(item, index, array) =>
