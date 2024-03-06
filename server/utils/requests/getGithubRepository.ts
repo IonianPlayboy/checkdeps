@@ -1,4 +1,4 @@
-import { createAuthenticatedGithubClient } from "./github/createAuthenticatedGithubClient";
+import { createAuthenticatedGithubClient } from "./utils/createAuthenticatedGithubClient";
 
 export const getGithubRepository = defineCachedFunction(
 	async (owner: string, repo: string, githubPersonalAccessToken: string) => {

@@ -1,4 +1,4 @@
-import { getGithubReleases } from "./getGithubReleases";
+import { getReleasesInChangelog, getNativeGithubReleases } from "./releases";
 
 export type GetPackageReleasesDataParams = {
 	owner: string;
@@ -7,6 +7,10 @@ export type GetPackageReleasesDataParams = {
 	githubPersonalAccessToken: string;
 };
 
+const matchIsFulfilled = <T>(
+	result: PromiseSettledResult<T>,
+): result is PromiseFulfilledResult<T> => result.status === "fulfilled";
+
 export const getPackageReleasesData = defineCachedFunction(
 	async ({
 		owner,
@@ -14,39 +18,20 @@ export const getPackageReleasesData = defineCachedFunction(
 		defaultBranch,
 		githubPersonalAccessToken,
 	}: GetPackageReleasesDataParams) => {
-		try {
-			const changelog = await getRemoteFileContent({
-				url: `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/CHANGELOG.md`,
-				type: "text",
-			});
-			return changelog
-				.replaceAll(
-					/(#+[^\S\r\n]+[^\r\n]*\d+\.\d+\.\d+[^\r\n]*\s)/g,
-					"<SEPARATE_HERE>$1",
-				)
-				?.split("<SEPARATE_HERE>")
-				.filter((el) => el.trim().length > 0)
-				.map((el, i, array) => {
-					const firstLine = el.split("\n")[0];
-					const [version] = firstLine.match(/\d+\.\d+\.\d+/) ?? [];
-					return {
-						id: array.length - i,
-						name: version,
-						body: el,
-					};
-				});
-		} catch (error) {
-			console.log("error", error);
-			console.log("fetching releases from GitHub", {
+		const releasesResults = await Promise.allSettled([
+			getReleasesInChangelog({
 				owner,
 				repo,
-			});
-			return getGithubReleases({
+				defaultBranch,
+			}),
+			getNativeGithubReleases({
 				owner,
 				repo,
 				githubPersonalAccessToken,
-			});
-		}
+			}),
+		]);
+
+		return releasesResults.find(matchIsFulfilled)?.value ?? [];
 	},
 	{
 		maxAge: 60 * 60,

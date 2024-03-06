@@ -1,4 +1,4 @@
-import { createAuthenticatedGithubClient } from "./github/createAuthenticatedGithubClient";
+import { createAuthenticatedGithubClient } from "../utils/createAuthenticatedGithubClient";
 
 export type GetGithubReleasesParams = {
 	owner: string;
@@ -6,7 +6,7 @@ export type GetGithubReleasesParams = {
 	githubPersonalAccessToken: string;
 };
 
-export const getGithubReleases = defineCachedFunction(
+export const getNativeGithubReleases = defineCachedFunction(
 	async ({
 		owner,
 		repo,
