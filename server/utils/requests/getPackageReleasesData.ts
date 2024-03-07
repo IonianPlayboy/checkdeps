@@ -1,4 +1,8 @@
-import { getReleasesInChangelog, getNativeGithubReleases } from "./releases";
+import {
+	getReleasesInChangelog,
+	getNativeGithubReleases,
+	getReleasesInWiki,
+} from "./releases";
 
 export type GetPackageReleasesDataParams = {
 	owner: string;
@@ -24,6 +28,10 @@ export const getPackageReleasesData = defineCachedFunction(
 				repo,
 				defaultBranch,
 			}),
+			getReleasesInWiki({
+				owner,
+				repo,
+			}),
 			getNativeGithubReleases({
 				owner,
 				repo,
@@ -34,7 +42,7 @@ export const getPackageReleasesData = defineCachedFunction(
 		return releasesResults.find(matchIsFulfilled)?.value ?? [];
 	},
 	{
-		maxAge: 60 * 60,
+		maxAge: 0,
 		name: "PackageReleasesData",
 		getKey: ({ owner, repo, defaultBranch }) =>
 			`${owner}/${repo}:${defaultBranch}`,
