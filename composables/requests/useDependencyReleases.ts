@@ -1,3 +1,5 @@
+import { useDependencyGithubRepository } from "./useDependencyGithubRepository";
+
 type GetDependencyReleasesDataParams = {
 	owner?: string;
 	repo?: string;
@@ -25,15 +27,7 @@ const getDependencyReleasesData = async ({
 		signal,
 	});
 
-	// There is a weird type issue with the response type if not using the type assertion
-	// I guess it's an union distribution issue, but I didn't find a way to fix it
-	// TODO: find a way to fix the type issue without using the type assertion here
-	type Response = Array<
-		Omit<(typeof response)[number], "id" | "name" | "body"> &
-			Pick<(typeof response)[number], "id" | "name" | "body">
-	>;
-
-	return response as Response;
+	return response;
 };
 
 type DependencyReleasesDataQueryOptions = {

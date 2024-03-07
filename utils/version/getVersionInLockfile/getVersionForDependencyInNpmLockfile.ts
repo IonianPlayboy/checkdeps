@@ -27,7 +27,7 @@ export const getVersionForDependencyInNpmLockfile = ({
 				? lockfileJson.dependencies
 				: lockfileJson.packages;
 
-		return currentDependenciesRecord[dependencyName]?.version;
+		return currentDependenciesRecord[dependencyName ?? ""]?.version;
 	} catch (error) {
 		console.log("error", error);
 		return undefined;

@@ -23,7 +23,7 @@ const getRemoteFileContent = async <Result>({
 	return response;
 };
 
-type RemoteFileQueryOptions = {
+export type RemoteFileQueryOptions = {
 	name: string;
 	url: MaybeRefOrGetter<string | undefined>;
 	type?: "json" | "text";

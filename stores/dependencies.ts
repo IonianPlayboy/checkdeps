@@ -2,13 +2,6 @@ export type ProjectToCheck = {
 	name: string;
 	packageJsonUrl: string;
 	lockfileUrl?: string;
-	// versionsPerDependency: Record<
-	// 	string,
-	// 	Partial<{
-	// 		lockfileVersion: string;
-	// 		semver: string;
-	// 	}>
-	// >;
 };
 
 export const useDependenciesStore = defineStore("dependencies", () => {
@@ -32,6 +25,7 @@ export const useDependenciesStore = defineStore("dependencies", () => {
 		currentProjectId.value = null;
 	};
 	return {
+		projectsMap,
 		projects,
 		currentProjectId,
 		currentProject,

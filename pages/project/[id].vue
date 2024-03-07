@@ -20,9 +20,7 @@
 						:key="dependencyName"
 						:dependency-name="dependencyName"
 						:project-id="id"
-						:version-data="
-							parsedVersionsPerDependency?.[dependencyName]
-						"
+						:version-data="versionsPerDependency?.[dependencyName]"
 					/>
 				</UPageGrid>
 				<h2 class="text-2xl font-bold">
@@ -34,9 +32,7 @@
 						:key="dependencyName"
 						:dependency-name="dependencyName"
 						:project-id="id"
-						:version-data="
-							parsedVersionsPerDependency?.[dependencyName]
-						"
+						:version-data="versionsPerDependency?.[dependencyName]"
 					/>
 				</UPageGrid>
 			</UPageBody>
@@ -46,7 +42,6 @@
 
 <script setup lang="ts">
 import { useRouteParams } from "@vueuse/router";
-import type { PackageJson } from "type-fest";
 
 definePageMeta({
 	keepAlive: true,
@@ -54,25 +49,18 @@ definePageMeta({
 
 const id = useRouteParams("id", "", { transform: String });
 
-const { currentProject, setCurrentProjectId, resetCurrentProjectId } =
-	useDependenciesStore();
+const { setCurrentProjectId } = useDependenciesStore();
 
 watchEffect(() => {
 	setCurrentProjectId(id.value);
 });
-
-const currentJsonUrl = computed(() => currentProject?.packageJsonUrl);
 
 const {
 	data: packageJsonData,
 	isLoading: isLoadingPackageJson,
 	isError: isErrorPackageJson,
 	error: packageJsonError,
-} = useRemoteFileContent<PackageJson>({
-	name: "packageJson",
-	type: "json",
-	url: currentJsonUrl,
-});
+} = useCurrentPackageJson();
 
 const directDependenciesNames = computed(() =>
 	Object.keys(packageJsonData.value?.dependencies ?? []),
@@ -82,29 +70,5 @@ const devDependenciesNames = computed(() =>
 	Object.keys(packageJsonData.value?.devDependencies ?? []),
 );
 
-const currentLockfileUrl = computed(() => currentProject?.lockfileUrl);
-
-const {
-	data: lockfileData,
-	isLoading: isLoadingLockfile,
-	isError: isErrorLockfile,
-	error: lockfileError,
-} = useRemoteFileContent<string>({
-	name: "lockfile",
-	url: currentLockfileUrl,
-});
-
-const allDependenciesNames = computed(() => [
-	...directDependenciesNames.value,
-	...devDependenciesNames.value,
-]);
-
-const parsedVersionsPerDependency = computed(() =>
-	getVersionsPerDependency({
-		packageJson: packageJsonData,
-		allDependenciesNames: allDependenciesNames,
-		lockfileData: lockfileData,
-		lockfileUrl: currentLockfileUrl,
-	}),
-);
+const versionsPerDependency = useCurrentVersionsPerDependency();
 </script>
