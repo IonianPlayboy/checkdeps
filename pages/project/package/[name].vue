@@ -37,9 +37,9 @@
 				</div>
 				<div v-else-if="releasesError">{{ releasesError }}</div>
 				<ReleasesContentList
-					v-if="!!releasesData"
+					v-if="!!releasesToDisplay"
 					ref="textContentListElement"
-					:content="releasesData"
+					:content="releasesToDisplay"
 					:items-links="itemsLinks"
 					:page-header-height="height"
 				/>
@@ -51,6 +51,7 @@
 <script setup lang="ts">
 import { ReleasesContentList } from "#components";
 import { useRouteParams } from "@vueuse/router";
+import { satisfies, gte } from "semver";
 
 const packageName = useRouteParams("name", "", { transform: String });
 
@@ -87,9 +88,39 @@ const matchIsItemWithDefinedName = <T extends { name: string | null }>(
 	item: T,
 ): item is T & { name: string } => !!item && !!item.name;
 
-const itemsLinks = computed(() =>
+const versionsPerDependency = useCurrentVersionsPerDependency();
+
+const currentVersion = computed(
+	() => versionsPerDependency.value[packageName.value],
+);
+
+const currentReleases = computed(() =>
 	(releasesData.value ?? [])
 		.filter(matchIsItemWithDefinedName)
+		.filter(
+			({ name }, index) =>
+				(!currentVersion.value?.semver ||
+					(currentVersion.value.semver === "latest" && !index) ||
+					satisfies(name, currentVersion.value.semver)) &&
+				(!currentVersion.value?.lockfileVersion ||
+					gte(name, currentVersion.value.lockfileVersion)),
+		),
+);
+
+const firstReleaseWithDefinedName = computed(() =>
+	(releasesData.value ?? []).find(matchIsItemWithDefinedName),
+);
+
+const releasesToDisplay = computed<(typeof currentReleases)["value"]>(() =>
+	currentReleases.value.length
+		? currentReleases.value
+		: firstReleaseWithDefinedName.value
+			? [firstReleaseWithDefinedName.value]
+			: [],
+);
+
+const itemsLinks = computed(() =>
+	releasesToDisplay.value
 		.map((item, index) => ({
 			id: item.id,
 			label: item.name,
