@@ -70,7 +70,13 @@ const handleClick = ({
 	click();
 };
 
-onMounted(scrollToCurrentLink);
+onMounted(() => {
+	whenever(
+		() => props.activeIndex !== -1,
+		() => scrollToCurrentLink(),
+		{ once: true, immediate: true },
+	);
+});
 
 watchThrottled(
 	() => props.activeIndex,

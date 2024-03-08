@@ -42,7 +42,6 @@ const virtualizerElement = ref<InstanceType<typeof Virtualizer> | null>(null);
 const currentActiveItemIndex = ref(-1);
 
 const getActiveItemIndex = (offset: number) => {
-	if (!virtualizerElement.value) return -1;
 	const { index } = props.itemsLinks.reduce(
 		(result, { baseIndex }) => {
 			const distance = Math.abs(
@@ -79,9 +78,16 @@ defineExpose({
 });
 
 onMounted(() => {
-	if (!virtualizerElement.value) return;
-	currentActiveItemIndex.value = getActiveItemIndex(
-		virtualizerElement.value.scrollOffset,
+	whenever(
+		() =>
+			virtualizerElement.value?.scrollOffset !== undefined &&
+			props.itemsLinks.length,
+		() => {
+			currentActiveItemIndex.value = getActiveItemIndex(
+				virtualizerElement.value!.scrollOffset,
+			);
+		},
+		{ once: true, immediate: true },
 	);
 });
 
