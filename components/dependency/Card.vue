@@ -39,7 +39,7 @@
 		</template>
 		<template #title>
 			<strong>{{ dependencyName }}</strong>
-			<template v-if="!isLoadingMetadata">
+			<template v-if="!!metadata">
 				<span class="text-sm text-gray-500">
 					{{
 						!!currentLockfileVersion &&
@@ -56,20 +56,16 @@
 			</div>
 		</template>
 		<template #description>
-			<p v-if="!isLoadingRepository" class="min-h-[2lh]">
+			<p v-if="!!repository" class="min-h-[2lh]">
 				{{ repository?.description }}
 			</p>
 			<div v-else class="flex flex-col space-y-2 py-1">
 				<USkeleton class="h-3.5 w-[250px]" />
 				<USkeleton class="h-3.5 w-[200px]" />
 			</div>
-			<p
-				v-if="!isLoadingMetadata && !!modifiedTimestamp"
-				class="text-sm mt-1 text-gray-500"
-			>
+			<p v-if="!!modifiedTimestamp" class="text-sm mt-1 text-gray-500">
 				Last update {{ formattedModifiedDate }}
 			</p>
-
 			<USkeleton v-else class="h-3 py-0.5 mt-1 w-32" />
 		</template>
 	</UPageCard>
