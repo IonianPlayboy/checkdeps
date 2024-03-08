@@ -2,6 +2,8 @@ export type ProjectToCheck = {
 	name: string;
 	packageJsonUrl: string;
 	lockfileUrl?: string;
+	owner?: string;
+	repo?: string;
 };
 
 export const useDependenciesStore = defineStore("dependencies", () => {
