@@ -15,7 +15,11 @@ export const useDependencyGithubRepository = <T = GithubRepository>({
 	const { data: repositoryParams, isLoading: isLoadingDependencyMetadata } =
 		useDependencyMetadata({
 			dependencyName,
-			select: ({ repository }) => getOwnerAndRepoFromUrl(repository?.url),
+			select: ({ repository, bugs }) =>
+				getOwnerAndRepoForDependency({
+					repository,
+					bugs,
+				}),
 		});
 
 	const isEnabled = computed(() => !isLoadingDependencyMetadata.value);
