@@ -8,7 +8,7 @@
 					container: 'gap-8 items-stretch lg:items-stretch',
 
 					title: 'flex gap-6 shrink-0',
-					links: 'overflow-x-auto grid grid-flow-col grow items-stretch',
+					links: 'grid grow items-stretch',
 				}"
 			>
 				<template #title>
@@ -44,6 +44,11 @@
 					:page-header-height="height"
 				/>
 			</UPageBody>
+			<template #left>
+				<UAside title="Your projects">
+					<UNavigationTree :links="linksToProjects" />
+				</UAside>
+			</template>
 		</UPage>
 	</UContainer>
 </template>
@@ -133,4 +138,19 @@ const itemsLinks = computed(() =>
 				array.findIndex(({ label }) => label === item.label) === index,
 		),
 );
+
+const { name } = useCurrentProjectConfig();
+
+const projects = useCurrentProjects();
+
+const linksToProjects = computed(() => [
+	{
+		label: "Your projects",
+		children: projects.value.map((project) => ({
+			label: project.name,
+			to: `/project/${project.name}`,
+			active: name.value === project.name,
+		})),
+	},
+]);
 </script>

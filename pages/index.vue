@@ -12,6 +12,11 @@
 					</template>
 				</UTabs>
 			</UPageBody>
+			<template #left>
+				<UAside>
+					<UNavigationTree :links="linksToProjects" />
+				</UAside>
+			</template>
 		</UPage>
 	</UContainer>
 </template>
@@ -30,4 +35,16 @@ const items = [
 		content: FormCustomUrls,
 	},
 ];
+
+const projects = useCurrentProjects();
+
+const linksToProjects = computed(() => [
+	{
+		label: "Your projects",
+		children: projects.value.map((project) => ({
+			label: project.name,
+			to: `/project/${project.name}`,
+		})),
+	},
+]);
 </script>

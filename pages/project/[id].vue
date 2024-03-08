@@ -10,7 +10,7 @@
 				</template>
 			</UPageHeader>
 
-			<UPageBody class="space-y-8">
+			<UPageBody class="space-y-8 overflow-y-auto">
 				<h2 class="text-2xl font-bold">
 					Direct Dependencies - {{ directDependenciesNames.length }}
 				</h2>
@@ -36,6 +36,11 @@
 					/>
 				</UPageGrid>
 			</UPageBody>
+			<template #left>
+				<UAside title="Your projects">
+					<UNavigationTree :links="linksToProjects" />
+				</UAside>
+			</template>
 		</UPage>
 	</UContainer>
 </template>
@@ -71,4 +76,40 @@ const devDependenciesNames = computed(() =>
 );
 
 const versionsPerDependency = useCurrentVersionsPerDependency();
+
+const projects = useCurrentProjects();
+
+const linksToProjects = computed(() => [
+	{
+		label: "Your projects",
+		children: projects.value.map((project) => ({
+			label: project.name,
+			to: `/project/${project.name}`,
+			...(id.value === project.name
+				? {
+						children: [
+							...directDependenciesNames.value.map(
+								(dependencyName) => ({
+									label: dependencyName,
+									to: {
+										name: "project-package-name",
+										params: { name: dependencyName },
+									},
+								}),
+							),
+							...devDependenciesNames.value.map(
+								(dependencyName) => ({
+									label: dependencyName,
+									to: {
+										name: "project-package-name",
+										params: { name: dependencyName },
+									},
+								}),
+							),
+						],
+					}
+				: {}),
+		})),
+	},
+]);
 </script>
