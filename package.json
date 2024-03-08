@@ -1,5 +1,5 @@
 {
-	"name": "nuxt-ui-pro-template-landing",
+	"name": "check-deps",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -33,6 +33,7 @@
 		"@formkit/auto-animate": "^0.8.1",
 		"@nuxt/eslint-config": "^0.2.0",
 		"@nuxtjs/web-vitals": "^0.2.6",
+		"@pinia-plugin-persistedstate/nuxt": "^1.2.0",
 		"@pinia/nuxt": "^0.5.1",
 		"@types/pacote": "^11.1.8",
 		"@types/semver": "^7.5.8",

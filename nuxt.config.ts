@@ -11,6 +11,7 @@ export default defineNuxtConfig({
 		"@pinia/nuxt",
 		"@nuxtjs/web-vitals",
 		"@formkit/auto-animate",
+		"@pinia-plugin-persistedstate/nuxt",
 	],
 	content: {
 		highlight: {
