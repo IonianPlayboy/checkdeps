@@ -38,6 +38,9 @@ dependencies:
   octokit:
     specifier: ^3.1.2
     version: 3.1.2
+  remark-github:
+    specifier: ^12.0.0
+    version: 12.0.0
   semver:
     specifier: ^7.6.0
     version: 7.6.0
@@ -7535,6 +7538,17 @@ packages:
       - supports-color
     dev: false
 
+  /remark-github@12.0.0:
+    resolution: {integrity: sha512-ByefQKFN184LeiGRCabfl7zUJsdlMYWEhiLX1gpmQ11yFg6xSuOTW7LVCv0oc1x+YvUMJW23NU36sJX2RWGgvg==}
+    dependencies:
+      '@types/mdast': 4.0.3
+      mdast-util-find-and-replace: 3.0.1
+      mdast-util-to-string: 4.0.0
+      to-vfile: 8.0.0
+      unist-util-visit: 5.0.0
+      vfile: 6.0.1
+    dev: false
+
   /remark-mdc@3.1.0:
     resolution: {integrity: sha512-5Hf5w2u59AgzclopOPwMUW4FgEWW6s7AVJf1yRIRIIfydBGrq7sW1rhnwMxsswt9bbMPxiuDwImh8DXPfyA85Q==}
     dependencies:
@@ -8233,6 +8247,12 @@ packages:
     engines: {node: '>=8.0'}
     dependencies:
       is-number: 7.0.0
+
+  /to-vfile@8.0.0:
+    resolution: {integrity: sha512-IcmH1xB5576MJc9qcfEC/m/nQCFt3fzMHz45sSlgJyTWjRbKW1HAkJpuf3DgE57YzIlZcwcBZA5ENQbBo4aLkg==}
+    dependencies:
+      vfile: 6.0.1
+    dev: false
 
   /toidentifier@1.0.1:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}

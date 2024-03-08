@@ -59,6 +59,7 @@
 					:content="currentReleases"
 					:items-links="itemsLinks"
 					:page-header-height="height"
+					:repository-identifier="repositoryIdentifier"
 				/>
 			</UPageBody>
 			<template #left>
@@ -73,7 +74,7 @@
 <script setup lang="ts">
 import { ReleasesContentList } from "#components";
 import { useRouteParams } from "@vueuse/router";
-import { satisfies, gte } from "semver";
+import { satisfies, valid, gte } from "semver";
 
 const packageName = useRouteParams("name", "", { transform: String });
 
@@ -88,6 +89,12 @@ const { data: repository, isLoading: isLoadingRepository } =
 	useDependencyGithubRepository({
 		dependencyName: packageName,
 	});
+
+const repositoryIdentifier = computed(
+	() =>
+		`${repository.value?.owner?.login ?? repository.value?.organization?.login}/${repository.value?.name}` ??
+		"",
+);
 
 const latestVersion = computed(
 	() => metadata.value?.["dist-tags"].latest ?? "",
@@ -114,9 +121,13 @@ const {
 		const dataFilteredWithName = data.filter(matchIsItemWithDefinedName);
 
 		const dataFilteredWithSemver = dataFilteredWithName.filter(
-			({ name }) =>
-				!currentVersion.value?.lockfileVersion ||
-				gte(name, currentVersion.value.lockfileVersion),
+			({ name }) => {
+				return (
+					!currentVersion.value?.lockfileVersion ||
+					(valid(name) !== null &&
+						gte(name, currentVersion.value.lockfileVersion))
+				);
+			},
 		);
 
 		return dataFilteredWithSemver.length
@@ -129,8 +140,9 @@ const releasesMatchingSemver = computed(
 	() =>
 		(releasesData.value ?? [])?.filter(
 			({ name }, index) =>
+				!currentVersion.value?.semver ||
 				(currentVersion.value.semver === "latest" && !index) ||
-				satisfies(name, currentVersion.value?.semver ?? ""),
+				satisfies(name, currentVersion.value.semver),
 		) ?? [],
 );
 

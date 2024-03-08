@@ -10,10 +10,14 @@
 			:data="content"
 			@scroll="throttledHandleScroll"
 		>
-			<MarkdownWrapper :key="item.id" :data="item" />
+			<MarkdownWrapper
+				:key="item.id"
+				:data="item"
+				:repository-identifier="repositoryIdentifier"
+			/>
 		</Virtualizer>
 		<div
-			class="sticky w-full bottom-0 h-24 bg-gradient-to-t dark:from-gray-950 from-gray-50 to-transparent"
+			class="sticky w-full bottom-0 h-24 pointer-events-none bg-gradient-to-t dark:from-gray-950 from-gray-50 to-transparent"
 		></div>
 	</section>
 </template>
@@ -35,6 +39,7 @@ const props = defineProps<{
 		// active: boolean;
 	}>;
 	pageHeaderHeight: number;
+	repositoryIdentifier: string;
 }>();
 
 const virtualizerElement = ref<InstanceType<typeof Virtualizer> | null>(null);

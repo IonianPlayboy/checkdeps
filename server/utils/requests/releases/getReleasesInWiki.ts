@@ -13,14 +13,7 @@ export const getReleasesInWiki = defineCachedFunction(
 			url: `https://raw.githubusercontent.com/wiki/${owner}/${repo}/Changelog.md`,
 			type: "text",
 		});
-		console.log("changelogFromWiki", changelogFromWiki.length);
-		const parsed = parseChangelogIntoReleases(changelogFromWiki);
-		console.log(
-			"parsed",
-			parsed,
-			// parsed.map((el) => ({ ...el, body: el.body?.length })),
-		);
-		return parsed;
+		return parseChangelogIntoReleases(changelogFromWiki);
 	},
 	{
 		maxAge: 0,
