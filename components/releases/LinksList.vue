@@ -1,5 +1,5 @@
 <template>
-	<section class="overflow-x-auto py-2 flex relative">
+	<section class="overflow-x-auto min-h-10 py-2 flex relative">
 		<div
 			class="sticky h-full z-10 pointer-events-none left-0 min-w-4 bg-gradient-to-r dark:from-gray-950 from-gray-50 to-transparent"
 		></div>
