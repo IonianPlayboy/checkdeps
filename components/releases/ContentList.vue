@@ -7,7 +7,7 @@
 			ref="virtualizerElement"
 			#default="item"
 			class="pt-8 pb-24"
-			:data="contentItems"
+			:data="content"
 			@scroll="throttledHandleScroll"
 		>
 			<MarkdownWrapper :key="item.id" :data="item" />
@@ -22,14 +22,11 @@
 import { Virtualizer } from "virtua/vue";
 
 const props = defineProps<{
-	content: Array<
-		| {
-				id: number | string;
-				name: string | null;
-				body?: string | null | undefined;
-		  }
-		| undefined
-	>;
+	content: Array<{
+		id: number | string;
+		name: string | null;
+		body?: string | null | undefined;
+	}>;
 	itemsLinks: Array<{
 		id: number | string;
 		label: string;
@@ -39,13 +36,6 @@ const props = defineProps<{
 	}>;
 	pageHeaderHeight: number;
 }>();
-
-const matchIsDefined = <T,>(item: T | undefined): item is T =>
-	item !== undefined;
-
-const contentItems = computed(
-	() => props.content?.filter(matchIsDefined) ?? [],
-);
 
 const virtualizerElement = ref<InstanceType<typeof Virtualizer> | null>(null);
 
