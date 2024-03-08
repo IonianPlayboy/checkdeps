@@ -29,6 +29,23 @@
 				<template #description>
 					{{ repository?.description }}
 				</template>
+				<template #default>
+					<UFormGroup
+						class="flex justify-end items-center gap-4 [&>div:last-of-type]:flex [&>div:last-of-type]:items-center"
+						size="lg"
+						name="respectSemver"
+					>
+						<template #label>
+							Respect semver defined in package.json?
+						</template>
+						<UToggle
+							v-model="respectSemver"
+							size="sm"
+							on-icon="i-heroicons-check-20-solid"
+							off-icon="i-heroicons-x-mark-20-solid"
+						/>
+					</UFormGroup>
+				</template>
 			</UPageHeader>
 
 			<UPageBody class="space-y-8 py-0 mt-0" prose>
@@ -37,9 +54,9 @@
 				</div>
 				<div v-else-if="releasesError">{{ releasesError }}</div>
 				<ReleasesContentList
-					v-if="!!releasesData"
+					v-if="!!currentReleases"
 					ref="textContentListElement"
-					:content="releasesData"
+					:content="currentReleases"
 					:items-links="itemsLinks"
 					:page-header-height="height"
 				/>
@@ -59,6 +76,10 @@ import { useRouteParams } from "@vueuse/router";
 import { satisfies, gte } from "semver";
 
 const packageName = useRouteParams("name", "", { transform: String });
+
+const respectSemver = defineModel<boolean>("respectSemver", {
+	default: true,
+});
 
 const { data: metadata, isLoading: isLoadingMetadata } = useDependencyMetadata({
 	dependencyName: packageName,
@@ -93,12 +114,9 @@ const {
 		const dataFilteredWithName = data.filter(matchIsItemWithDefinedName);
 
 		const dataFilteredWithSemver = dataFilteredWithName.filter(
-			({ name }, index) =>
-				(!currentVersion.value?.semver ||
-					(currentVersion.value.semver === "latest" && !index) ||
-					satisfies(name, currentVersion.value.semver)) &&
-				(!currentVersion.value?.lockfileVersion ||
-					gte(name, currentVersion.value.lockfileVersion)),
+			({ name }) =>
+				!currentVersion.value?.lockfileVersion ||
+				gte(name, currentVersion.value.lockfileVersion),
 		);
 
 		return dataFilteredWithSemver.length
@@ -106,6 +124,21 @@ const {
 			: dataFilteredWithName?.slice(0, 1) ?? [];
 	},
 });
+
+const releasesMatchingSemver = computed(
+	() =>
+		(releasesData.value ?? [])?.filter(
+			({ name }, index) =>
+				(currentVersion.value.semver === "latest" && !index) ||
+				satisfies(name, currentVersion.value?.semver ?? ""),
+		) ?? [],
+);
+
+const currentReleases = computed(() =>
+	respectSemver.value
+		? releasesMatchingSemver.value
+		: releasesData.value ?? [],
+);
 
 const headerElement = ref<HTMLElement | null>(null);
 const { height } = useElementSize(headerElement, undefined, {
@@ -121,7 +154,7 @@ const currentActiveItemIndex = computed(
 );
 
 const itemsLinks = computed(() =>
-	(releasesData.value ?? [])
+	(currentReleases.value ?? [])
 		.map((item, index) => ({
 			id: item.id,
 			label: item.name,
