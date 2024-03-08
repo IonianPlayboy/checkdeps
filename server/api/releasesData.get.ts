@@ -4,6 +4,7 @@ export default eventHandler(async (event) => {
 		owner: string;
 		repo: string;
 		defaultBranch: string;
+		latestVersion?: string;
 	}>(event);
 
 	return await getPackageReleasesData({

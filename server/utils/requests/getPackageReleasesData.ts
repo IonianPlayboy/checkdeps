@@ -8,6 +8,7 @@ export type GetPackageReleasesDataParams = {
 	owner: string;
 	repo: string;
 	defaultBranch: string;
+	latestVersion?: string;
 	githubPersonalAccessToken: string;
 };
 
@@ -20,6 +21,7 @@ export const getPackageReleasesData = defineCachedFunction(
 		owner,
 		repo,
 		defaultBranch,
+		latestVersion,
 		githubPersonalAccessToken,
 	}: GetPackageReleasesDataParams) => {
 		const releasesResults = await Promise.allSettled([
@@ -39,7 +41,16 @@ export const getPackageReleasesData = defineCachedFunction(
 			}),
 		]);
 
-		return releasesResults.find(matchIsFulfilled)?.value ?? [];
+		const currentReleasesData =
+			releasesResults
+				.filter(matchIsFulfilled)
+				.find(
+					({ value }) =>
+						!latestVersion ||
+						value.some(({ name }) => name?.includes(latestVersion)),
+				)?.value ?? [];
+
+		return currentReleasesData;
 	},
 	{
 		maxAge: 0,

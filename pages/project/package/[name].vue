@@ -37,9 +37,9 @@
 				</div>
 				<div v-else-if="releasesError">{{ releasesError }}</div>
 				<ReleasesContentList
-					v-if="!!releasesToDisplay"
+					v-if="!!releasesData"
 					ref="textContentListElement"
-					:content="releasesToDisplay"
+					:content="releasesData"
 					:items-links="itemsLinks"
 					:page-header-height="height"
 				/>
@@ -63,12 +63,43 @@ const { data: repository, isLoading: isLoadingRepository } =
 		dependencyName: packageName,
 	});
 
+const latestVersion = computed(
+	() => metadata.value?.["dist-tags"].latest ?? "",
+);
+
+const matchIsItemWithDefinedName = <T extends { name: string | null }>(
+	item: T,
+): item is T & { name: string } => !!item && !!item.name;
+
+const versionsPerDependency = useCurrentVersionsPerDependency();
+
+const currentVersion = computed(
+	() => versionsPerDependency.value[packageName.value],
+);
+
 const {
 	data: releasesData,
 	isLoading: isLoadingReleases,
 	error: releasesError,
 } = useDependencyReleases({
 	dependencyName: packageName,
+	latestVersion,
+	select: (data) => {
+		const dataFilteredWithName = data.filter(matchIsItemWithDefinedName);
+
+		const dataFilteredWithSemver = dataFilteredWithName.filter(
+			({ name }, index) =>
+				(!currentVersion.value?.semver ||
+					(currentVersion.value.semver === "latest" && !index) ||
+					satisfies(name, currentVersion.value.semver)) &&
+				(!currentVersion.value?.lockfileVersion ||
+					gte(name, currentVersion.value.lockfileVersion)),
+		);
+
+		return dataFilteredWithSemver.length
+			? dataFilteredWithSemver
+			: dataFilteredWithName?.slice(0, 1) ?? [];
+	},
 });
 
 const headerElement = ref<HTMLElement | null>(null);
@@ -84,43 +115,8 @@ const currentActiveItemIndex = computed(
 	() => textContentListElement.value?.currentActiveItemIndex ?? -1,
 );
 
-const matchIsItemWithDefinedName = <T extends { name: string | null }>(
-	item: T,
-): item is T & { name: string } => !!item && !!item.name;
-
-const versionsPerDependency = useCurrentVersionsPerDependency();
-
-const currentVersion = computed(
-	() => versionsPerDependency.value[packageName.value],
-);
-
-const currentReleases = computed(() =>
-	(releasesData.value ?? [])
-		.filter(matchIsItemWithDefinedName)
-		.filter(
-			({ name }, index) =>
-				(!currentVersion.value?.semver ||
-					(currentVersion.value.semver === "latest" && !index) ||
-					satisfies(name, currentVersion.value.semver)) &&
-				(!currentVersion.value?.lockfileVersion ||
-					gte(name, currentVersion.value.lockfileVersion)),
-		),
-);
-
-const firstReleaseWithDefinedName = computed(() =>
-	(releasesData.value ?? []).find(matchIsItemWithDefinedName),
-);
-
-const releasesToDisplay = computed<(typeof currentReleases)["value"]>(() =>
-	currentReleases.value.length
-		? currentReleases.value
-		: firstReleaseWithDefinedName.value
-			? [firstReleaseWithDefinedName.value]
-			: [],
-);
-
 const itemsLinks = computed(() =>
-	releasesToDisplay.value
+	(releasesData.value ?? [])
 		.map((item, index) => ({
 			id: item.id,
 			label: item.name,

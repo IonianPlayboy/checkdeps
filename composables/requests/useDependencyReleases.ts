@@ -4,6 +4,7 @@ type GetDependencyReleasesDataParams = {
 	owner?: string;
 	repo?: string;
 	defaultBranch?: string;
+	latestVersion?: string;
 	signal?: AbortSignal;
 };
 
@@ -11,6 +12,7 @@ const getDependencyReleasesData = async ({
 	owner,
 	repo,
 	defaultBranch,
+	latestVersion,
 	signal,
 }: GetDependencyReleasesDataParams = {}) => {
 	if (!owner || !repo || !defaultBranch)
@@ -23,6 +25,7 @@ const getDependencyReleasesData = async ({
 			owner,
 			repo,
 			defaultBranch,
+			latestVersion,
 		},
 		signal,
 	});
@@ -30,13 +33,21 @@ const getDependencyReleasesData = async ({
 	return response;
 };
 
-type DependencyReleasesDataQueryOptions = {
+export type ReleasesData = Awaited<
+	ReturnType<typeof getDependencyReleasesData>
+>;
+
+type DependencyReleasesDataQueryOptions<T> = {
 	dependencyName?: MaybeRefOrGetter<string>;
+	latestVersion?: MaybeRefOrGetter<string>;
+	select?: (releasesData: ReleasesData) => T;
 };
 
-export const useDependencyReleases = ({
+export const useDependencyReleases = <T = ReleasesData>({
 	dependencyName,
-}: DependencyReleasesDataQueryOptions) => {
+	latestVersion,
+	select,
+}: DependencyReleasesDataQueryOptions<T>) => {
 	const { data: repositoryParams, isLoading: isLoadingDependencyRepository } =
 		useDependencyGithubRepository({
 			dependencyName,
@@ -64,6 +75,7 @@ export const useDependencyReleases = ({
 				repositoryParams.value?.owner,
 				repositoryParams.value?.repo,
 				repositoryParams.value?.defaultBranch,
+				toValue(latestVersion),
 			] as const,
 	);
 
@@ -72,8 +84,10 @@ export const useDependencyReleases = ({
 		queryFn: ({ signal }) =>
 			getDependencyReleasesData({
 				...toValue(repositoryParams),
+				latestVersion: toValue(latestVersion),
 				signal,
 			}),
 		enabled: isEnabled,
+		select,
 	});
 };
