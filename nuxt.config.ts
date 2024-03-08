@@ -61,7 +61,6 @@ export default defineNuxtConfig({
 		},
 	},
 	webVitals: {
-		provider: "log",
 		debug: true, // debug enable metrics reporting on dev environments
 		disabled: false,
 	},
