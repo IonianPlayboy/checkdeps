@@ -22,7 +22,7 @@ const getPackageMetadata = async ({
 export type PackageMetadata = Awaited<ReturnType<typeof getPackageMetadata>>;
 
 type PackageMetadataQueryOptions<T> = {
-	dependencyName?: MaybeRefOrGetter<string>;
+	dependencyName: MaybeRefOrGetter<string | undefined>;
 	select?: (metadata: PackageMetadata) => T;
 };
 

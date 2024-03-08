@@ -38,7 +38,7 @@ export type ReleasesData = Awaited<
 >;
 
 type DependencyReleasesDataQueryOptions<T> = {
-	dependencyName?: MaybeRefOrGetter<string>;
+	dependencyName: MaybeRefOrGetter<string | undefined>;
 	latestVersion?: MaybeRefOrGetter<string>;
 	select?: (releasesData: ReleasesData) => T;
 };
