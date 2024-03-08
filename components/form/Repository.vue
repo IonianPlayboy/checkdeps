@@ -97,7 +97,7 @@ const {
 const { setCurrentProjectId, addProject } = useDependenciesStore();
 
 whenever(
-	() => !isLoadingRepository.value && hasBeenSubmitted.value,
+	() => !!repositoryData.value && !!hasBeenSubmitted.value,
 	() => {
 		if (!state.owner || !state.repo) return;
 

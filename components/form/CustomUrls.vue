@@ -85,7 +85,7 @@ const {
 const { setCurrentProjectId, addProject } = useDependenciesStore();
 
 whenever(
-	() => !isLoadingPackageJson.value,
+	() => !!packageJsonData.value && !!hasBeenSubmitted.value,
 	() => {
 		if (!state.packageJsonUrl) return;
 
