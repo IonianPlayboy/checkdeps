@@ -5,7 +5,7 @@
 			icon: {
 				wrapper: 'flex justify-between w-full',
 			},
-			title: 'w-full flex justify-between',
+			title: 'w-full flex justify-between flex-wrap',
 			// @ts-ignore
 			body: { base: 'h-full flex flex-col' },
 			description: 'flex flex-col justify-between flex-1 ',
