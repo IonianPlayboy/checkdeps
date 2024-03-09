@@ -20,11 +20,13 @@
 			/>
 			<USkeleton v-else class="h-8 w-8 rounded-full" />
 			<UBadge
-				v-if="!!currentLockfileVersion"
+				v-if="!!currentLockfileVersion && !!latestVersion"
 				:color="
 					latestVersion === currentLockfileVersion
 						? 'green'
-						: 'yellow'
+						: isOutsideSemverRange
+							? 'blue'
+							: 'yellow'
 				"
 				:variant="
 					latestVersion === currentLockfileVersion ? 'soft' : 'subtle'
@@ -33,7 +35,7 @@
 				{{
 					latestVersion === currentLockfileVersion
 						? "Up to date"
-						: "Outdated"
+						: currentSemverDiff
 				}}
 			</UBadge>
 		</template>
@@ -47,7 +49,7 @@
 							? `${currentLockfileVersion} - `
 							: ""
 					}}
-					{{ metadata?.["dist-tags"].latest }}
+					{{ latestVersion }}
 				</span>
 			</template>
 			<div v-else class="w-full flex justify-between py-1">
@@ -72,6 +74,9 @@
 </template>
 
 <script setup lang="ts">
+import { diff, satisfies } from "semver";
+import { upperFirst } from "scule";
+
 const props = defineProps<{
 	dependencyName: string;
 	projectId: string;
@@ -105,4 +110,26 @@ const { data: repository, isLoading: isLoadingRepository } =
 const modifiedTimestamp = computed(() => metadata.value?.time?.modified ?? "");
 
 const formattedModifiedDate = useDateFormat(modifiedTimestamp, "YYYY-MM-DD");
+
+const versionsPerDependency = useCurrentVersionsPerDependency();
+
+const currentVersion = computed(
+	() => versionsPerDependency.value[props.dependencyName],
+);
+
+const currentSemverDiff = computed(() =>
+	!!currentLockfileVersion.value && !!latestVersion.value
+		? upperFirst(
+				diff(currentLockfileVersion.value, latestVersion.value) ??
+					"outdated",
+			)
+		: "Outdated",
+);
+
+const isOutsideSemverRange = computed(
+	() =>
+		!currentVersion.value.semver ||
+		!latestVersion.value ||
+		!satisfies(latestVersion.value, currentVersion.value.semver),
+);
 </script>
