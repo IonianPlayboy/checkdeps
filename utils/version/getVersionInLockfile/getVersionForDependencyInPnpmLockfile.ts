@@ -9,6 +9,6 @@ export const getVersionForDependencyInPnpmLockfile = ({
 }: GetVersionForDependencyInPnpmLockfileParams) =>
 	lockfileData?.match(
 		new RegExp(
-			`'?(?<name>${dependencyName})'?:\\n[^v]+version: (?<version>[^\\n(]+)`,
+			`\\s'?(?<name>${dependencyName})'?:\\n[^v]+version: (?<version>[^\\n(]+)`,
 		),
 	)?.groups?.version;
