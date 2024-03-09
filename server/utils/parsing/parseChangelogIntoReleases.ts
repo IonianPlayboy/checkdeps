@@ -1,10 +1,4 @@
-export const parseChangelogIntoReleases = (
-	changelog: string,
-): Array<{
-	id: number;
-	name: string | null;
-	body?: string | null | undefined;
-}> =>
+export const parseChangelogIntoReleases = (changelog: string) =>
 	changelog
 		.replaceAll(
 			/([^#])(#{1,3}[^\S\r\n]+[^\r\n]*\d+\.\d+\.\d+[^\r\n]*\s)/g,
@@ -24,11 +18,16 @@ export const parseChangelogIntoReleases = (
 				firstLine.match(
 					/((0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)/,
 				) ?? [];
-			return {
+			const result = {
 				id: array.length - i,
-				name: version ?? null,
+				tag_name: version ?? firstLine,
+				name: firstLine,
 				// NOTE: Need to escape double curly braces here to avoid parsing it as dynamic content
 				// Reference to Nuxt Content doc: https://content.nuxt.com/usage/markdown#binding-data-in-markdown
 				body: el.replace("{{}}", "\\{\\{\\}\\}"),
+			};
+			return result as Omit<typeof result, "name" | "body"> & {
+				name: string | null;
+				body?: string | null;
 			};
 		});

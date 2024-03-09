@@ -100,10 +100,6 @@ const latestVersion = computed(
 	() => metadata.value?.["dist-tags"].latest ?? "",
 );
 
-const matchIsItemWithDefinedName = <T extends { name: string | null }>(
-	item: T,
-): item is T & { name: string } => !!item && !!item.name;
-
 const versionsPerDependency = useCurrentVersionsPerDependency();
 
 const currentVersion = computed(
@@ -118,31 +114,34 @@ const {
 	dependencyName: packageName,
 	latestVersion,
 	select: (data) => {
-		const dataFilteredWithName = data.filter(matchIsItemWithDefinedName);
+		const dataFilteredWithSemver = data.filter(({ tag_name }) => {
+			return (
+				!currentVersion.value?.lockfileVersion ||
+				(valid(tag_name) !== null &&
+					gte(tag_name, currentVersion.value.lockfileVersion))
+			);
+		});
 
-		const dataFilteredWithSemver = dataFilteredWithName.filter(
-			({ name }) => {
-				return (
-					!currentVersion.value?.lockfileVersion ||
-					(valid(name) !== null &&
-						gte(name, currentVersion.value.lockfileVersion))
-				);
-			},
+		const firstReleaseToShowWithoutSemver = data.find(
+			({ tag_name }) =>
+				!latestVersion.value || tag_name === latestVersion.value,
 		);
 
 		return dataFilteredWithSemver.length
 			? dataFilteredWithSemver
-			: dataFilteredWithName?.slice(0, 1) ?? [];
+			: firstReleaseToShowWithoutSemver
+				? [firstReleaseToShowWithoutSemver]
+				: [];
 	},
 });
 
 const releasesMatchingSemver = computed(
 	() =>
 		(releasesData.value ?? [])?.filter(
-			({ name }, index) =>
+			({ tag_name }, index) =>
 				!currentVersion.value?.semver ||
 				(currentVersion.value.semver === "latest" && !index) ||
-				satisfies(name, currentVersion.value.semver),
+				satisfies(tag_name, currentVersion.value.semver),
 		) ?? [],
 );
 
@@ -169,7 +168,7 @@ const itemsLinks = computed(() =>
 	(currentReleases.value ?? [])
 		.map((item, index) => ({
 			id: item.id,
-			label: item.name,
+			label: item.tag_name,
 			baseIndex: index,
 			click: () => {
 				if (!textContentListElement.value) return;

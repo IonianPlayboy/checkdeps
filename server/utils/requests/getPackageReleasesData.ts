@@ -41,16 +41,15 @@ export const getPackageReleasesData = defineCachedFunction(
 			}),
 		]);
 
-		const currentReleasesData =
-			releasesResults
-				.filter(matchIsFulfilled)
-				.find(
-					({ value }) =>
-						!latestVersion ||
-						value.some(({ name }) => name?.includes(latestVersion)),
-				)?.value ?? [];
+		const successfulReleases = releasesResults.filter(matchIsFulfilled);
 
-		return currentReleasesData;
+		const currentReleasesData = successfulReleases.find(
+			({ value }) =>
+				!latestVersion ||
+				value.some(({ name }) => name?.includes(latestVersion)),
+		)?.value;
+
+		return currentReleasesData ?? successfulReleases[0]?.value;
 	},
 	{
 		maxAge: 0,
