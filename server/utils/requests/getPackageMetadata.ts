@@ -4,7 +4,7 @@ export const getPackageMetadata = defineCachedFunction(
 	async (packageName: string) => {
 		if (!packageName) return Promise.reject("No package name provided");
 		const response = await $fetch<Packument>(
-			`https://registry.npmjs.org/${packageName}`
+			`https://registry.npmjs.org/${packageName}`,
 		);
 		return response;
 	},
@@ -12,5 +12,5 @@ export const getPackageMetadata = defineCachedFunction(
 		maxAge: 60 * 60,
 		name: "PackageMetadata",
 		getKey: (packageName: string) => packageName,
-	}
+	},
 );
