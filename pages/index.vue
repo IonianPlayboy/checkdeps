@@ -8,7 +8,7 @@
 			<UPageBody>
 				<UTabs class="space-y-4" :items="items">
 					<template #item="{ item }">
-						<component :is="item.content" />
+						<component :is="item.component" />
 					</template>
 				</UTabs>
 			</UPageBody>
@@ -28,11 +28,11 @@ const FormCustomUrls = resolveComponent("FormCustomUrls");
 const items = [
 	{
 		label: "Repository",
-		content: FormRepository,
+		component: FormRepository,
 	},
 	{
 		label: "Custom URLs",
-		content: FormCustomUrls,
+		component: FormCustomUrls,
 	},
 ];
 
