@@ -113,7 +113,10 @@ whenever(
 			repo: state.repo,
 		});
 		setCurrentProjectId(currentName);
-		return navigateTo(`/project/${currentName}`);
+		return navigateTo({
+			name: "project",
+			params: { id: currentName },
+		});
 	},
 );
 </script>
