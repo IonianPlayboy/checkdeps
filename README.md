@@ -1,3 +1,5 @@
+ #checkdeps
+
 ![nuxt-ui-landing-social-card](https://github.com/nuxt-ui-pro/landing/assets/739984/d0919c96-e5f2-47e9-b460-44f87341218d)
 
 # Nuxt UI Pro - Landing template
